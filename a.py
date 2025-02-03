@@ -6,12 +6,12 @@ from mlxtend.frequent_patterns import apriori, association_rules
 import matplotlib.pyplot as plt
 
 
-print("📥 Loading RDF data...")
+print("Loading RDF data...")
 g = Graph()
-g.parse(r"C:\Users\singh\OneDrive\Desktop\projectdata.ttl", format="ttl")  # Update with the correct path
+g.parse(r"file-path", format="ttl")  # Update with the correct path
 
 triples = [(str(s), str(p), str(o)) for s, p, o in g]
-print(f"✅ Loaded {len(triples)} triples.")
+print(f"Loaded {len(triples)} triples.")
 
 
 entities = sorted(set([s for s, _, _ in triples] + [o for _, _, o in triples]))
@@ -22,7 +22,7 @@ entity_to_idx = {entity: i for i, entity in enumerate(entities)}
 relation_to_idx = {relation: i for i, relation in enumerate(relations)}
 
 
-print("📊 Initializing sparse matrix...")
+print("Initializing sparse matrix...")
 sparse_matrix = lil_matrix((len(entities), len(relations)), dtype=bool)
 
 
@@ -32,16 +32,16 @@ for s, p, o in triples:
 
 
 sparse_matrix = sparse_matrix.tocsr()
-print(f"✅ Sparse matrix initialized: {sparse_matrix.shape[0]} entities × {sparse_matrix.shape[1]} relations.")
+print(f"Sparse matrix initialized: {sparse_matrix.shape[0]} entities × {sparse_matrix.shape[1]} relations.")
 
 
-print("🔄 Converting sparse matrix to transactional format...")
+print("Converting sparse matrix to transactional format...")
 transactions = [
     list(sparse_matrix[i].nonzero()[1])  # Get non-zero relation indices for each entity
     for i in range(sparse_matrix.shape[0])
 ]
 transactions = [t for t in transactions if len(t) > 0]  # Remove empty transactions
-print(f"✅ Created {len(transactions)} transactions.")
+print(f"Created {len(transactions)} transactions.")
 
 
 df_transactions = pd.DataFrame(transactions).fillna(0).astype(bool)
@@ -61,10 +61,10 @@ rules["consequents"] = rules["consequents"].apply(lambda x: map_indices_to_label
 
 
 rules.to_csv("semantic_association_rules.csv", index=False)
-print(f"✅ Mined {len(rules)} semantic association rules. Saved to 'semantic_association_rules.csv'.")
+print(f"Mined {len(rules)} semantic association rules. Saved to 'semantic_association_rules.csv'.")
 
 
-print("📊 Visualizing top association rules...")
+print("Visualizing top association rules...")
 rules_sorted = rules.sort_values("confidence", ascending=False).head(20)
 
 plt.figure(figsize=(10, 5))
